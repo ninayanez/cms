@@ -3,10 +3,14 @@ const cuid = require('cuid')
 const _ = require('underscore')
 const http = require('http')
 const level = require('level')
-const db = level('./data')
+const yaml = require( 'yamljs')
 
-const clients = require('./clients.json')
-const dbJsonPath = './data.json'
+const clients = yaml.load('./clients.yml')
+const db = level('./data')
+const dbJsonPath = './static/data.json'
+
+// add server side rendering on update!
+// serve pre-rendered routes somehow!
 
 function dumpJson (filePath) {
   var json = '['
@@ -41,9 +45,6 @@ const server = http.createServer((req, res) => {
     if (client) { onPostReq(req,res); return }
     res.statusCode = 400
     res.end()
-  } else if (req.url==='/' && req.method==='GET') {
-    res.statusCode = 200
-    fs.createReadStream(dbJsonPath).pipe(res)
   } else {
     res.statusCode = 400
     res.end()
