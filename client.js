@@ -1,22 +1,20 @@
 import  _ from 'underscore'
-import router from './router.js'
+import urls from './urls.js'
 import reqGet from './reqGet.js'
 
-console.log(reqGet)
+var u = null
 
-var r = null
-// implement cache at somepoint
-// set localstorage as db or empty obj if !localstorage
-
-window.addEventListener('popstate', (e) => { // history
-  r(window.location.pathname)
+window.addEventListener('popstate', (e) => { // catch back & forward events
+  u(window.location.pathname)
 })
 
-reqGet('http://localhost:8080/data.json', (err, res) => {
+reqGet('http://localhost:8080/data.json', (err, res) => { // load data 
   if (err) {console.log(err); return}
-  var data = JSON.parse(res)
+  const data = JSON.parse(res)
   var skeleton = _.findWhere(data, {key:'skeleton'})
   data.splice(_.indexOf(data, skeleton),1)
-  r = router(data,skeleton)
-  r(window.location.pathname)
+
+  // init router & load path
+  u = urls(data,skeleton)
+  u(window.location.pathname)
 })
